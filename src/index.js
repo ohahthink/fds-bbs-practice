@@ -116,6 +116,7 @@ async function drawPostDetail(postId) {
   const bodyEl = frag.querySelector('.body')
   const backEl = frag.querySelector('.back')
   const commentListEl = frag.querySelector('.comment-list')
+  const commentFormEl = frag.querySelector('.comment=form')
 
   // 3. 필요한 데이터 불러오기
   // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다 배열이 분해대서 변수에 들어갑니다 title이라는 body라는 user라는 comments변수
@@ -169,6 +170,17 @@ async function drawPostDetail(postId) {
   // 5. 이벤트 리스너 등록하기
   backEl.addEventListener('click', e => {
     drawPostList()
+  })
+
+  commentFormEl.addEventListener('submit', async e => {
+    //전송이 일어나면
+    e.preventDefault()
+    const name = e.target.elements.body.value
+    // 어떤 자원의 자식이 되는 자원을 등록할때는
+    await api.post(`/posts/${postId}/comments`, {
+      body
+    })
+    drawPostDetail(postId)
   })
 
   // 6. 템플릿을 문서에 삽입
