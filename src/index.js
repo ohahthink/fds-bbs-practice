@@ -128,6 +128,15 @@ async function drawPostDetail(postId) {
     }
   })
 
+  const params = new URLSearchParams()
+  comments.forEach(c => {
+    params.append('id', c.userId)
+  })
+  // userList에는 댓글 작성자 정보를 포함하는 배열이 저장되는 것
+  const {data: userList} = await api.get('/users', {
+    params
+  })
+
   // 4. 내용 채우기
   // 분해대입 했기때문에
   titleEl.textContent = title
@@ -147,6 +156,9 @@ async function drawPostDetail(postId) {
     // 3. 필요한 데이터 불러오기 - 필요없음
     // 4. 내용 채우기
     bodyEl.textContent = commentItem.body
+    // 댓글 작성자가 user에 저장됨
+    const user = userList.find(item => item.id === commentItem.userId)
+    authorEl.textContent = user.username
 
     // 5. 이벤트 리스너 등록하기
     // 6. 템플릿을 문서에 삽입
