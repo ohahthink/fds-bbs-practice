@@ -123,9 +123,10 @@ async function drawPostDetail(postId) {
   const backEl = frag.querySelector('.back')
   const commentListEl = frag.querySelector('.comment-list')
   const commentFormEl = frag.querySelector('.comment-form')
+  const updateEl = frag.querySelector('.update')
 
   // 3. 필요한 데이터 불러오기
-  // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다 배열이 분해대서 변수에 들어갑니다 title이라는 body라는 user라는 comments변수
+  // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다 배열이 분해되서 변수에 들어갑니다 title이라는 body라는 user라는 comments변수
   const {data: {title, body, user, comments}} = await api.get('/posts/' + postId, {
     params: {
       _expand: 'user',
@@ -176,6 +177,10 @@ async function drawPostDetail(postId) {
   // 5. 이벤트 리스너 등록하기
   backEl.addEventListener('click', e => {
     drawPostList()
+  })
+
+  updateEl.addEventListener('click', e => {
+    drawEditPostForm(postId)
   })
 
   commentFormEl.addEventListener('submit', async e => {
@@ -230,13 +235,45 @@ async function drawNewPostForm() {
 }
 
 async function drawEditPostForm(postId) {
-  // 게시물 수정하는 함수
+  // 새글 추가하는 함수
   // 1. 템플릿 복사
+  const frag = document.importNode(templates.postForm, true)
+
   // 2. 요소 선택
+  const formEl = frag.querySelector('.post-form')
+  const backEl = frag.querySelector('.back')
+  const titleEl = frag.querySelector('.title')
+  const bodyEl = frag.querySelector('.body')
+
   // 3. 필요한 데이터 불러오기
+  const {data: {title, body}} = await api.get('/posts/' + postId)
+
   // 4. 내용 채우기
+  titleEl.value = title
+  bodyEl.value = body
+
   // 5. 이벤트 리스너 등록하기
+  formEl.addEventListener('submit', async e => {
+    // 브라우저 기본내장기능 해제,취소
+    e.preventDefault()
+    const title = e.target.elements.title.value
+    const body = e.target.elements.body.value
+    await api.patch('/posts/' + postId, {
+      title,
+      body
+    })
+    drawPostList()
+  })
+  backEl.addEventListener('click', e => {
+    // 브라우저 기본내장기능 해제,취소 폼안에 버튼이 들어있으면 각별히 주의 !
+    e.preventDefault()
+    drawPostList()
+  })
+
   // 6. 템플릿을 문서에 삽입
+  rootEl.textContent = ''
+  rootEl.appendChild(frag)
+
 }
 
 // 페이지 로드 시 그릴 화면 설정
