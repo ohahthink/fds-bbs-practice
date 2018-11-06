@@ -3,6 +3,8 @@ import '@babel/polyfill'
 import axios from 'axios'
 
 const api = axios.create({
+  // 바깥에서 주입해준 환경변수를 사용하는 코드
+  // 이 컴퓨터에서만 사용할 환경변수를 설정하기 위해서 .env 파일을 편집하면 된다.
   baseURL: process.env.API_URL
 })
 
@@ -68,8 +70,34 @@ async function drawPostList() {
   const frag = document.importNode(templates.postList, true)
 
   // 2. 요소 선택
+  const listEl = frag.querySelector('.post-list')
+
   // 3. 필요한 데이터 불러오기
+  // {data} data라는 속성에 들어있는 값을 꺼내서 postList라는 변수에 저장하는 것 밑 주서과 같은 의미
+  const {data: postList} = await api.get('/posts?_expand=user')
+  // const res = await api.get('/posts?_embed=user')
+  // const postList = res.data
+
   // 4. 내용 채우기
+  for (const postItem of postList) {
+    const frag = document.importNode(templates.postItem, true)
+
+    const idEl = frag.querySelector('.id')
+    const titleEl = frag.querySelector('.title')
+    const authorEl = frag.querySelector('.author')
+
+    idEl.textContent = postItem.id
+    titleEl.textContent = postItem.title
+    authorEl.textContent = postItem.user.username
+
+    titleEl.addEventListener('click', e => {
+      // 내가 클릭한 요소의 id가 넘어감
+      drawPostDetail(postItem.id)
+    })
+
+    listEl.appendChild(frag)
+  }
+
   // 5. 이벤트 리스너 등록하기
 
   // 6. 템플릿을 문서에 삽입
@@ -77,6 +105,7 @@ async function drawPostList() {
   rootEl.appendChild(frag)
 }
 
+// 게시물을 표시해주는 함수, 내가 보여줘야할 게시물이 그때그때 다를 수 있으므로 매개변수를 받습니다
 async function drawPostDetail(postId) {
   // 1. 템플릿 복사
   // 2. 요소 선택
