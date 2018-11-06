@@ -71,6 +71,8 @@ async function drawPostList() {
 
   // 2. 요소 선택
   const listEl = frag.querySelector('.post-list')
+  const createEl = frag.querySelector('.create')
+
 
   // 3. 필요한 데이터 불러오기
   // {data} data라는 속성에 들어있는 값을 꺼내서 postList라는 변수에 저장하는 것 밑 주서과 같은 의미
@@ -100,6 +102,10 @@ async function drawPostList() {
 
   // 5. 이벤트 리스너 등록하기
 
+  createEl.addEventListener('click', e => {
+    drawNewPostForm()
+  })
+
   // 6. 템플릿을 문서에 삽입
   rootEl.textContent = ''
   rootEl.appendChild(frag)
@@ -116,7 +122,7 @@ async function drawPostDetail(postId) {
   const bodyEl = frag.querySelector('.body')
   const backEl = frag.querySelector('.back')
   const commentListEl = frag.querySelector('.comment-list')
-  const commentFormEl = frag.querySelector('.comment=form')
+  const commentFormEl = frag.querySelector('.comment-form')
 
   // 3. 필요한 데이터 불러오기
   // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다 배열이 분해대서 변수에 들어갑니다 title이라는 body라는 user라는 comments변수
@@ -190,15 +196,34 @@ async function drawPostDetail(postId) {
 }
 
 async function drawNewPostForm() {
+  // 새글 추가하는 함수
   // 1. 템플릿 복사
+  const frag = document.importNode(templates.postForm, true)
+
   // 2. 요소 선택
+  const formEl = frag.querySelector('.post-form')
+
   // 3. 필요한 데이터 불러오기
   // 4. 내용 채우기
   // 5. 이벤트 리스너 등록하기
+  formEl.addEventListener('submit', async e => {
+    e.preventDefault()
+    const title = e.target.elements.title.value
+    const body = e.target.elements.body.value
+    await api.post('/posts', {
+      title,
+      body
+    })
+    drawPostList()
+  })
+
   // 6. 템플릿을 문서에 삽입
+  rootEl.textContent = ''
+  rootEl.appendChild(frag)
 }
 
 async function drawEditPostForm(postId) {
+  // 게시물 수정하는 함수
   // 1. 템플릿 복사
   // 2. 요소 선택
   // 3. 필요한 데이터 불러오기
