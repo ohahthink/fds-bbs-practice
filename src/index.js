@@ -118,12 +118,17 @@ async function drawPostDetail(postId) {
 
   // 3. 필요한 데이터 불러오기
   // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다
-  const {data: {title, body}} = await api.get('/posts/' + postId)
+  const {data: {title, body, user}} = await api.get('/posts/' + postId, {
+    params: {
+      _expand: 'user'
+    }
+  })
 
   // 4. 내용 채우기
   // 분해대입 했기때문에
   titleEl.textContent = title
   bodyEl.textContent = body
+  authorEl.textContent = user.username
 
   // 5. 이벤트 리스너 등록하기
   backEl.addEventListener('click', e => {
