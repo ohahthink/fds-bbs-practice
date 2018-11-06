@@ -108,11 +108,32 @@ async function drawPostList() {
 // 게시물을 표시해주는 함수, 내가 보여줘야할 게시물이 그때그때 다를 수 있으므로 매개변수를 받습니다
 async function drawPostDetail(postId) {
   // 1. 템플릿 복사
+  const frag = document.importNode(templates.postDetail, true)
+
   // 2. 요소 선택
+  const titleEl = frag.querySelector('.title')
+  const authorEl = frag.querySelector('.author')
+  const bodyEl = frag.querySelector('.body')
+  const backEl = frag.querySelector('.back')
+
   // 3. 필요한 데이터 불러오기
+  // 2중분해대입 , 분해대입은 3중 4중 5중도 가능합니다
+  const {data: {title, body}} = await api.get('/posts/' + postId)
+
   // 4. 내용 채우기
+  // 분해대입 했기때문에
+  titleEl.textContent = title
+  bodyEl.textContent = body
+
   // 5. 이벤트 리스너 등록하기
+  backEl.addEventListener('click', e => {
+    drawPostList()
+  })
+
   // 6. 템플릿을 문서에 삽입
+  rootEl.textContent = ''
+  rootEl.appendChild(frag)
+
 }
 
 async function drawNewPostForm() {
