@@ -202,11 +202,13 @@ async function drawNewPostForm() {
 
   // 2. 요소 선택
   const formEl = frag.querySelector('.post-form')
+  const backEl = frag.querySelector('.back')
 
   // 3. 필요한 데이터 불러오기
   // 4. 내용 채우기
   // 5. 이벤트 리스너 등록하기
   formEl.addEventListener('submit', async e => {
+    // 브라우저 기본내장기능 해제,취소
     e.preventDefault()
     const title = e.target.elements.title.value
     const body = e.target.elements.body.value
@@ -214,6 +216,11 @@ async function drawNewPostForm() {
       title,
       body
     })
+    drawPostList()
+  })
+  backEl.addEventListener('click', e => {
+    // 브라우저 기본내장기능 해제,취소 폼안에 버튼이 들어있으면 각별히 주의 !
+    e.preventDefault()
     drawPostList()
   })
 
